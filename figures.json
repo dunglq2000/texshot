@@ -1,0 +1,13 @@
+{
+    "figures/music": {
+        "lualatex": [
+            "notes",
+            "octave"
+        ]
+    },
+    "figures/stuff": {
+        "pdflatex": [
+            "yinyang"
+        ]
+    }
+}

@@ -1,0 +1,15 @@
+% !TEX program = lualatex
+% Một quãng tám Đô–Đô với lời ca tiếng Việt (MusiXTeX).
+% Không dùng các option `crop`/`preview` hay `varwidth=<độ rộng>` của standalone:
+% `crop,preview` cắt mất dòng lời ca, còn độ rộng nhỏ hơn khuông nhạc làm xén mất nốt.
+\documentclass[border=2pt]{standalone}
+\usepackage{musixtex}
+\usepackage{fontspec}
+
+\begin{document}
+\begin{music}
+    \startextract
+        \NOTEs\zsong{Đô}\wh{-2} \zsong{Rê}\wh{-1} \zsong{Mi}\wh{0} \zsong{Fa}\wh{1} \zsong{Son}\wh{2} \zsong{La}\wh{3} \zsong{Si}\wh{4} \zsong{Đô}\wh{5}\en
+    \zendextract
+\end{music}
+\end{document}

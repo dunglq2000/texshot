@@ -1,0 +1,38 @@
+\documentclass[tikz]{standalone}
+
+\usepackage{musicography}
+\usepackage{fontspec}
+
+\begin{document}
+\begin{tikzpicture}
+    \node (o) at (4, 0) {\musWhole};
+    \node (w1) at (3, -1) {\musHalf};
+    \node (w2) at (5, -1) {\musHalf};
+    \node (b1) at (2, -2) {\musQuarter};
+    \node (b2) at (4, -2) {\musQuarter};
+    \node (e1) at (1, -3) {\musEighth};
+    \node (e2) at (3, -3) {\musEighth};
+    \node (s1) at (0, -4) {\musSixteenth};
+    \node (s2) at (2, -4) {\musSixteenth};
+
+    \node (oo) at (8, 0) {Nốt tròn};
+    \node (ww) at (8, -1) {Nốt trắng};
+    \node (bb) at (8, -2) {Nốt đen};
+    \node (ee) at (8, -3) {Nốt móc đơn};
+    \node (ss) at (8, -4) {Nốt móc đôi};
+
+    \foreach \x in {1, 2}
+    {
+        \draw (o) -- (w\x);
+        \draw (w1) -- (b\x);
+        \draw (b1) -- (e\x);
+        \draw (e1) -- (s\x);
+    }
+
+    \draw[-latex, dashed] (oo) -- (o);
+    \draw[-latex, dashed] (ww) -- (w2);
+    \draw[-latex, dashed] (bb) -- (b2);
+    \draw[-latex, dashed] (ee) -- (e2);
+    \draw[-latex, dashed] (ss) -- (s2);
+\end{tikzpicture}
+\end{document}
