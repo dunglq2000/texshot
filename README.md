@@ -55,7 +55,7 @@ Engine được chọn theo thứ tự:
 2. nếu không có dòng đó: file dùng `fontspec` hoặc `luacode` thì build bằng `lualatex`;
 3. còn lại build bằng `pdflatex`.
 
-**2. Theo `figures.json` (không có `-d`).** Đọc `figures.json` trong thư mục hiện tại (hoặc file chỉ định bằng `-c`) và chỉ build các file được liệt kê, với engine ghi trong file cấu hình. Ví dụ [`examples/figures.json`](examples/figures.json):
+**2. Theo `figures.json` (không có `-d`).** Đọc `figures.json` trong thư mục hiện tại (hoặc file chỉ định bằng `-c`) và chỉ build các file được liệt kê, với engine ghi trong file cấu hình. Ví dụ [`examples/figures.json`](https://github.com/dunglq2000/texshot/blob/main/examples/figures.json):
 
 ```json
 {
@@ -74,7 +74,7 @@ Khoá là thư mục, tính **tương đối so với chính file JSON**. Giá t
 
 #### Build một hình: `octave.tex`
 
-[`examples/music/octave.tex`](examples/music/octave.tex) vẽ một quãng tám Đô–Đô bằng MusiXTeX, kèm lời ca tiếng Việt. Vì cần `fontspec`, file được build bằng `lualatex`:
+[`examples/music/octave.tex`](https://github.com/dunglq2000/texshot/blob/main/examples/music/octave.tex) vẽ một quãng tám Đô–Đô bằng MusiXTeX, kèm lời ca tiếng Việt. Vì cần `fontspec`, file được build bằng `lualatex`:
 
 ```latex
 % !TEX program = lualatex
@@ -212,7 +212,7 @@ The engine is chosen in this order:
 2. without it: files using `fontspec` or `luacode` are built with `lualatex`;
 3. everything else is built with `pdflatex`.
 
-**2. From `figures.json` (no `-d`).** Reads `figures.json` in the current directory (or the file given with `-c`) and builds only the listed files, with the engine given in the configuration. For example, [`examples/figures.json`](examples/figures.json):
+**2. From `figures.json` (no `-d`).** Reads `figures.json` in the current directory (or the file given with `-c`) and builds only the listed files, with the engine given in the configuration. For example, [`examples/figures.json`](https://github.com/dunglq2000/texshot/blob/main/examples/figures.json):
 
 ```json
 {
@@ -231,7 +231,7 @@ Keys are directories, **relative to the JSON file itself**. Values map an engine
 
 #### Building one figure: `octave.tex`
 
-[`examples/music/octave.tex`](examples/music/octave.tex) draws a C–C octave with MusiXTeX, with Vietnamese solfège lyrics. It needs `fontspec`, so it is built with `lualatex`:
+[`examples/music/octave.tex`](https://github.com/dunglq2000/texshot/blob/main/examples/music/octave.tex) draws a C–C octave with MusiXTeX, with Vietnamese solfège lyrics. It needs `fontspec`, so it is built with `lualatex`:
 
 ```latex
 % !TEX program = lualatex
@@ -369,7 +369,7 @@ texshot [параметры]
 2. если его нет: файлы с `fontspec` или `luacode` собираются через `lualatex`;
 3. все остальные — через `pdflatex`.
 
-**2. По `figures.json` (без `-d`).** Читается `figures.json` в текущем каталоге (или файл, заданный через `-c`), и собираются только перечисленные в нём файлы с указанным движком. Например, [`examples/figures.json`](examples/figures.json):
+**2. По `figures.json` (без `-d`).** Читается `figures.json` в текущем каталоге (или файл, заданный через `-c`), и собираются только перечисленные в нём файлы с указанным движком. Например, [`examples/figures.json`](https://github.com/dunglq2000/texshot/blob/main/examples/figures.json):
 
 ```json
 {
@@ -388,7 +388,7 @@ texshot [параметры]
 
 #### Сборка одного рисунка: `octave.tex`
 
-[`examples/music/octave.tex`](examples/music/octave.tex) рисует октаву до–до средствами MusiXTeX с подписями нот на вьетнамском. Файлу нужен `fontspec`, поэтому он собирается через `lualatex`:
+[`examples/music/octave.tex`](https://github.com/dunglq2000/texshot/blob/main/examples/music/octave.tex) рисует октаву до–до средствами MusiXTeX с подписями нот на вьетнамском. Файлу нужен `fontspec`, поэтому он собирается через `lualatex`:
 
 ```latex
 % !TEX program = lualatex

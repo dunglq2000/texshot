@@ -31,6 +31,12 @@ classifiers = [
 ]
 dependencies = []
 
+[project.urls]
+Homepage = "https://github.com/dunglq2000/texshot"
+Source = "https://github.com/dunglq2000/texshot"
+Issues = "https://github.com/dunglq2000/texshot/issues"
+Documentation = "https://github.com/dunglq2000/texshot#readme"
+
 [project.optional-dependencies]
 jpeg = ["pdf2image"]
 
