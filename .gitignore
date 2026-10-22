@@ -11,3 +11,9 @@
 
 __pycache__/
 .DS_Store
+
+# Python packaging
+dist/
+build/
+*.egg-info/
+.venv/

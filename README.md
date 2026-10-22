@@ -12,17 +12,23 @@ CLI biên dịch các hình vẽ LaTeX (TikZ, MusiXTeX, ...) ở dạng `standal
 
 ### Yêu cầu
 
-- Python 3.9 trở lên. Bản SVG và PDF chỉ dùng thư viện chuẩn.
+- Python 3.9 trở lên. Bản SVG và PDF không cần thư viện ngoài.
 - TeX Live (hoặc MacTeX) có `latex`, `pdflatex`, `lualatex` và `dvisvgm` trong `PATH`.
-- Chỉ khi xuất JPEG: `pip install pdf2image`, cùng poppler (`brew install poppler` hoặc `apt install poppler-utils`).
+- Chỉ khi xuất JPEG: poppler (`brew install poppler` hoặc `apt install poppler-utils`).
+
+### Cài đặt
+
+```bash
+pip install texshot            # SVG và PDF
+pip install "texshot[jpeg]"    # thêm pdf2image để xuất JPEG
+```
 
 ### Cách chạy
 
-Chạy từ thư mục cha của `texshot`. Hai cách gọi sau tương đương:
+Sau khi cài, dùng lệnh `texshot` (tương đương `python -m texshot`):
 
 ```bash
-python texshot [tuỳ chọn]
-python -m texshot [tuỳ chọn]
+texshot [tuỳ chọn]
 ```
 
 Không chỉ định định dạng thì mặc định chỉ build SVG.
@@ -31,10 +37,11 @@ Không chỉ định định dạng thì mặc định chỉ build SVG.
 |---|---|
 | `--svg`, `--pdf`, `--jpeg` | Định dạng cần xuất, có thể kết hợp nhiều định dạng. |
 | `-d DIR [DIR ...]` | Build mọi file `.tex` độc lập trong các thư mục này, kể cả thư mục con. |
-| `-c FILE` | Dùng file cấu hình khác thay cho `texshot/figures.json` (khi không có `-d`). |
+| `-c FILE` | File cấu hình dùng khi không có `-d` (mặc định: `figures.json` trong thư mục hiện tại). |
 | `-f`, `--force` | Build lại cả các hình đã cập nhật. |
 | `-j N` | Build song song `N` hình. |
 | `-v` | In toàn bộ output của TeX và `dvisvgm`. |
+| `-V`, `--version` | In phiên bản. |
 
 ### Chọn file cần build
 
@@ -48,14 +55,14 @@ Engine được chọn theo thứ tự:
 2. nếu không có dòng đó: file dùng `fontspec` hoặc `luacode` thì build bằng `lualatex`;
 3. còn lại build bằng `pdflatex`.
 
-**2. Theo `figures.json` (không có `-d`).** Chỉ build các file được liệt kê, với engine ghi trong file cấu hình:
+**2. Theo `figures.json` (không có `-d`).** Đọc `figures.json` trong thư mục hiện tại (hoặc file chỉ định bằng `-c`) và chỉ build các file được liệt kê, với engine ghi trong file cấu hình. Ví dụ [`examples/figures.json`](examples/figures.json):
 
 ```json
 {
-    "figures/music": {
+    "music": {
         "lualatex": ["notes", "octave"]
     },
-    "figures/stuff": {
+    "stuff": {
         "pdflatex": ["yinyang"]
     }
 }
@@ -67,7 +74,7 @@ Khoá là thư mục, tính **tương đối so với chính file JSON**. Giá t
 
 #### Build một hình: `octave.tex`
 
-[`figures/music/octave.tex`](figures/music/octave.tex) vẽ một quãng tám Đô–Đô bằng MusiXTeX, kèm lời ca tiếng Việt. Vì cần `fontspec`, file được build bằng `lualatex`:
+[`examples/music/octave.tex`](examples/music/octave.tex) vẽ một quãng tám Đô–Đô bằng MusiXTeX, kèm lời ca tiếng Việt. Vì cần `fontspec`, file được build bằng `lualatex`:
 
 ```latex
 % !TEX program = lualatex
@@ -85,25 +92,26 @@ Khoá là thư mục, tính **tương đối so với chính file JSON**. Giá t
 ```
 
 ```console
-$ python texshot -d texshot/figures/music
-built   texshot/figures/music/notes.tex [lualatex]: notes.svg
-built   texshot/figures/music/octave.tex [lualatex]: octave.svg
+$ texshot -d examples/music
+built   examples/music/notes.tex [lualatex]: notes.svg
+built   examples/music/octave.tex [lualatex]: octave.svg
 2/2 figures OK
 ```
 
 Chạy lại khi chưa sửa file `.tex` nào thì các hình được bỏ qua. Dùng `-f` để build lại:
 
 ```console
-$ python texshot -d texshot/figures/music
-skipped texshot/figures/music/notes.tex [lualatex]: up to date
-skipped texshot/figures/music/octave.tex [lualatex]: up to date
+$ texshot -d examples/music
+skipped examples/music/notes.tex [lualatex]: up to date
+skipped examples/music/octave.tex [lualatex]: up to date
 2/2 figures OK
 ```
 
-Xuất thêm PDF cho mọi hình trong `figures.json`:
+Xuất thêm PDF cho mọi hình trong `examples/figures.json`:
 
 ```bash
-python texshot --svg --pdf
+cd examples
+texshot --svg --pdf
 ```
 
 #### Hình nhiều trang
@@ -111,7 +119,7 @@ python texshot --svg --pdf
 Với `\documentclass[tikz]{standalone}`, mỗi `tikzpicture` là một trang. File `univariate.tex` có 10 `tikzpicture` nên cho ra 10 SVG:
 
 ```console
-$ python texshot -d mathematics/algebra/polynomial/figures -j 4
+$ texshot -d mathematics/algebra/polynomial/figures -j 4
 built   mathematics/algebra/polynomial/figures/polynomials/univariate.tex [pdflatex]: univariate-01.svg, univariate-02.svg, ..., univariate-10.svg
 1/1 figures OK
 ```
@@ -135,7 +143,7 @@ Viết đường dẫn **tương đối** từ file rST tới hình và để đ
 Hình lỗi không làm dừng các hình khác. Các dòng lỗi `!` trong log được in ra để dễ sửa:
 
 ```console
-$ python texshot -d drafts
+$ texshot -d drafts
 FAILED  drafts/bad.tex [pdflatex]
         latex failed
         ! Undefined control sequence.
@@ -161,17 +169,23 @@ A CLI that compiles `standalone` LaTeX figures (TikZ, MusiXTeX, ...) into SVG fo
 
 ### Requirements
 
-- Python 3.9 or newer. SVG and PDF output only use the standard library.
+- Python 3.9 or newer. SVG and PDF output need no third-party packages.
 - TeX Live (or MacTeX) with `latex`, `pdflatex`, `lualatex` and `dvisvgm` on the `PATH`.
-- For JPEG output only: `pip install pdf2image`, plus poppler (`brew install poppler` or `apt install poppler-utils`).
+- For JPEG output only: poppler (`brew install poppler` or `apt install poppler-utils`).
+
+### Installation
+
+```bash
+pip install texshot            # SVG and PDF
+pip install "texshot[jpeg]"    # adds pdf2image for JPEG output
+```
 
 ### Usage
 
-Run from the parent directory of `texshot`. The two invocations below are equivalent:
+Once installed, run the `texshot` command (equivalent to `python -m texshot`):
 
 ```bash
-python texshot [options]
-python -m texshot [options]
+texshot [options]
 ```
 
 If no format is given, only SVG is built.
@@ -180,10 +194,11 @@ If no format is given, only SVG is built.
 |---|---|
 | `--svg`, `--pdf`, `--jpeg` | Output formats; several can be combined. |
 | `-d DIR [DIR ...]` | Build every standalone `.tex` file in these directories, including subdirectories. |
-| `-c FILE` | Use another configuration file instead of `texshot/figures.json` (when `-d` is not given). |
+| `-c FILE` | Configuration file used without `-d` (default: `figures.json` in the current directory). |
 | `-f`, `--force` | Rebuild figures that are already up to date. |
 | `-j N` | Build `N` figures in parallel. |
 | `-v` | Print the full output of TeX and `dvisvgm`. |
+| `-V`, `--version` | Print the version. |
 
 ### Choosing the files to build
 
@@ -197,14 +212,14 @@ The engine is chosen in this order:
 2. without it: files using `fontspec` or `luacode` are built with `lualatex`;
 3. everything else is built with `pdflatex`.
 
-**2. From `figures.json` (no `-d`).** Only the listed files are built, with the engine given in the configuration:
+**2. From `figures.json` (no `-d`).** Reads `figures.json` in the current directory (or the file given with `-c`) and builds only the listed files, with the engine given in the configuration. For example, [`examples/figures.json`](examples/figures.json):
 
 ```json
 {
-    "figures/music": {
+    "music": {
         "lualatex": ["notes", "octave"]
     },
-    "figures/stuff": {
+    "stuff": {
         "pdflatex": ["yinyang"]
     }
 }
@@ -216,7 +231,7 @@ Keys are directories, **relative to the JSON file itself**. Values map an engine
 
 #### Building one figure: `octave.tex`
 
-[`figures/music/octave.tex`](figures/music/octave.tex) draws a C–C octave with MusiXTeX, with Vietnamese solfège lyrics. It needs `fontspec`, so it is built with `lualatex`:
+[`examples/music/octave.tex`](examples/music/octave.tex) draws a C–C octave with MusiXTeX, with Vietnamese solfège lyrics. It needs `fontspec`, so it is built with `lualatex`:
 
 ```latex
 % !TEX program = lualatex
@@ -234,25 +249,26 @@ Keys are directories, **relative to the JSON file itself**. Values map an engine
 ```
 
 ```console
-$ python texshot -d texshot/figures/music
-built   texshot/figures/music/notes.tex [lualatex]: notes.svg
-built   texshot/figures/music/octave.tex [lualatex]: octave.svg
+$ texshot -d examples/music
+built   examples/music/notes.tex [lualatex]: notes.svg
+built   examples/music/octave.tex [lualatex]: octave.svg
 2/2 figures OK
 ```
 
 Running again without changing any `.tex` file skips the figures. Use `-f` to rebuild them:
 
 ```console
-$ python texshot -d texshot/figures/music
-skipped texshot/figures/music/notes.tex [lualatex]: up to date
-skipped texshot/figures/music/octave.tex [lualatex]: up to date
+$ texshot -d examples/music
+skipped examples/music/notes.tex [lualatex]: up to date
+skipped examples/music/octave.tex [lualatex]: up to date
 2/2 figures OK
 ```
 
-Also export PDF for every figure in `figures.json`:
+Also export PDF for every figure in `examples/figures.json`:
 
 ```bash
-python texshot --svg --pdf
+cd examples
+texshot --svg --pdf
 ```
 
 #### Multi-page figures
@@ -260,7 +276,7 @@ python texshot --svg --pdf
 With `\documentclass[tikz]{standalone}`, every `tikzpicture` is a page. `univariate.tex` has 10 `tikzpicture`s, so it produces 10 SVGs:
 
 ```console
-$ python texshot -d mathematics/algebra/polynomial/figures -j 4
+$ texshot -d mathematics/algebra/polynomial/figures -j 4
 built   mathematics/algebra/polynomial/figures/polynomials/univariate.tex [pdflatex]: univariate-01.svg, univariate-02.svg, ..., univariate-10.svg
 1/1 figures OK
 ```
@@ -284,7 +300,7 @@ Use a path **relative** to the rST file and the extension `*`. Sphinx picks the 
 A failing figure does not stop the others. The `!` error lines from the log are printed to help fix it:
 
 ```console
-$ python texshot -d drafts
+$ texshot -d drafts
 FAILED  drafts/bad.tex [pdflatex]
         latex failed
         ! Undefined control sequence.
@@ -310,17 +326,23 @@ Exit codes: `0` if every figure succeeded, `1` if some figure failed, `2` for in
 
 ### Требования
 
-- Python 3.9 или новее. Для SVG и PDF нужна только стандартная библиотека.
+- Python 3.9 или новее. Для SVG и PDF сторонние пакеты не нужны.
 - TeX Live (или MacTeX) с `latex`, `pdflatex`, `lualatex` и `dvisvgm` в `PATH`.
-- Только для JPEG: `pip install pdf2image`, а также poppler (`brew install poppler` или `apt install poppler-utils`).
+- Только для JPEG: poppler (`brew install poppler` или `apt install poppler-utils`).
+
+### Установка
+
+```bash
+pip install texshot            # SVG и PDF
+pip install "texshot[jpeg]"    # дополнительно pdf2image для JPEG
+```
 
 ### Запуск
 
-Запускайте из родительского каталога `texshot`. Два варианта вызова ниже равнозначны:
+После установки используйте команду `texshot` (равнозначно `python -m texshot`):
 
 ```bash
-python texshot [параметры]
-python -m texshot [параметры]
+texshot [параметры]
 ```
 
 Если формат не указан, собирается только SVG.
@@ -329,10 +351,11 @@ python -m texshot [параметры]
 |---|---|
 | `--svg`, `--pdf`, `--jpeg` | Выходные форматы; можно указать несколько. |
 | `-d DIR [DIR ...]` | Собрать все самостоятельные файлы `.tex` в этих каталогах, включая подкаталоги. |
-| `-c FILE` | Использовать другой файл конфигурации вместо `texshot/figures.json` (если `-d` не задан). |
+| `-c FILE` | Файл конфигурации, используемый без `-d` (по умолчанию `figures.json` в текущем каталоге). |
 | `-f`, `--force` | Пересобрать и актуальные рисунки. |
 | `-j N` | Собирать `N` рисунков параллельно. |
 | `-v` | Выводить полный вывод TeX и `dvisvgm`. |
+| `-V`, `--version` | Показать версию. |
 
 ### Выбор файлов для сборки
 
@@ -346,14 +369,14 @@ python -m texshot [параметры]
 2. если его нет: файлы с `fontspec` или `luacode` собираются через `lualatex`;
 3. все остальные — через `pdflatex`.
 
-**2. По `figures.json` (без `-d`).** Собираются только перечисленные файлы с движком, указанным в конфигурации:
+**2. По `figures.json` (без `-d`).** Читается `figures.json` в текущем каталоге (или файл, заданный через `-c`), и собираются только перечисленные в нём файлы с указанным движком. Например, [`examples/figures.json`](examples/figures.json):
 
 ```json
 {
-    "figures/music": {
+    "music": {
         "lualatex": ["notes", "octave"]
     },
-    "figures/stuff": {
+    "stuff": {
         "pdflatex": ["yinyang"]
     }
 }
@@ -365,7 +388,7 @@ python -m texshot [параметры]
 
 #### Сборка одного рисунка: `octave.tex`
 
-[`figures/music/octave.tex`](figures/music/octave.tex) рисует октаву до–до средствами MusiXTeX с подписями нот на вьетнамском. Файлу нужен `fontspec`, поэтому он собирается через `lualatex`:
+[`examples/music/octave.tex`](examples/music/octave.tex) рисует октаву до–до средствами MusiXTeX с подписями нот на вьетнамском. Файлу нужен `fontspec`, поэтому он собирается через `lualatex`:
 
 ```latex
 % !TEX program = lualatex
@@ -383,25 +406,26 @@ python -m texshot [параметры]
 ```
 
 ```console
-$ python texshot -d texshot/figures/music
-built   texshot/figures/music/notes.tex [lualatex]: notes.svg
-built   texshot/figures/music/octave.tex [lualatex]: octave.svg
+$ texshot -d examples/music
+built   examples/music/notes.tex [lualatex]: notes.svg
+built   examples/music/octave.tex [lualatex]: octave.svg
 2/2 figures OK
 ```
 
 При повторном запуске без изменений в файлах `.tex` рисунки пропускаются. Для пересборки используйте `-f`:
 
 ```console
-$ python texshot -d texshot/figures/music
-skipped texshot/figures/music/notes.tex [lualatex]: up to date
-skipped texshot/figures/music/octave.tex [lualatex]: up to date
+$ texshot -d examples/music
+skipped examples/music/notes.tex [lualatex]: up to date
+skipped examples/music/octave.tex [lualatex]: up to date
 2/2 figures OK
 ```
 
-Дополнительно вывести PDF для всех рисунков из `figures.json`:
+Дополнительно вывести PDF для всех рисунков из `examples/figures.json`:
 
 ```bash
-python texshot --svg --pdf
+cd examples
+texshot --svg --pdf
 ```
 
 #### Многостраничные рисунки
@@ -409,7 +433,7 @@ python texshot --svg --pdf
 При `\documentclass[tikz]{standalone}` каждый `tikzpicture` — отдельная страница. В `univariate.tex` 10 окружений `tikzpicture`, поэтому получается 10 файлов SVG:
 
 ```console
-$ python texshot -d mathematics/algebra/polynomial/figures -j 4
+$ texshot -d mathematics/algebra/polynomial/figures -j 4
 built   mathematics/algebra/polynomial/figures/polynomials/univariate.tex [pdflatex]: univariate-01.svg, univariate-02.svg, ..., univariate-10.svg
 1/1 figures OK
 ```
@@ -433,7 +457,7 @@ built   mathematics/algebra/polynomial/figures/polynomials/univariate.tex [pdfla
 Ошибка в одном рисунке не останавливает сборку остальных. Строки ошибок `!` из журнала выводятся, чтобы их было проще исправить:
 
 ```console
-$ python texshot -d drafts
+$ texshot -d drafts
 FAILED  drafts/bad.tex [pdflatex]
         latex failed
         ! Undefined control sequence.

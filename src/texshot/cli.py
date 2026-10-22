@@ -10,10 +10,11 @@ Which files are built:
 
 - with `-d DIR ...`: every standalone `.tex` file (one containing
   `\\documentclass`) under each directory, recursively;
-- otherwise: the files listed in `figures.json`, whose keys are directories
-  relative to the JSON file and whose values map an engine to file names:
+- otherwise: the files listed in `figures.json` (in the current directory, or
+  given with `-c`), whose keys are directories relative to the JSON file and
+  whose values map an engine to file names:
 
-      {"figures/music": {"lualatex": ["notes"]}}
+      {"music": {"lualatex": ["notes"]}}
 
 The engine of a file found with `-d` is read from a magic comment
 `% !TEX program = lualatex`; without it, files using `fontspec` or `luacode`
@@ -32,8 +33,10 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 
+from texshot import __version__
+
 ENGINES = ("pdflatex", "lualatex")
-DEFAULT_CONFIG = pathlib.Path(__file__).resolve().parent / "figures.json"
+DEFAULT_CONFIG = pathlib.Path("figures.json")
 
 
 @dataclass
@@ -225,7 +228,7 @@ def build(fig: Figure, formats: list[str], force: bool, verbose: bool) -> tuple[
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="python texshot",
+        prog="texshot",
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -236,9 +239,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="build every standalone .tex under these directories (recursively)\n"
                              "instead of the files listed in figures.json")
     parser.add_argument("-c", "--config", type=pathlib.Path, default=DEFAULT_CONFIG,
-                        help=f"figures.json to use without -d (default: {DEFAULT_CONFIG})")
+                        help=f"figures.json to use without -d (default: ./{DEFAULT_CONFIG})")
     parser.add_argument("-f", "--force", action="store_true", help="rebuild figures that are up to date")
     parser.add_argument("-j", "--jobs", type=int, default=1, help="number of figures built in parallel")
+    parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("-v", "--verbose", action="store_true", help="print the TeX and dvisvgm output")
     args = parser.parse_args(argv)
 
